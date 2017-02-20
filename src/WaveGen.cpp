@@ -80,6 +80,7 @@ void WaveGen::info() {
     std::cout <<"_maxW: " <<_maxW << std::endl;
     std::cout <<"_minW: " <<_minW << std::endl;
     std::cout <<"_U: "    <<_U << std::endl;
+
 }
 
 
