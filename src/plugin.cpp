@@ -7,6 +7,9 @@
 #include "lcm_messages/geometry/pose.hpp"
 #include "WaveGen.h"
 
+#define VEL 1
+#define MAX_DIST 5
+
 namespace gazebo
 {
 
@@ -28,6 +31,8 @@ namespace gazebo
         bool _got_t_offs;
         double _time_offs;
         double _dt;
+        double _platVel;
+        double _dir;
         WaveGen wave;
         math::Pose _pose, _start_pose,_prev_pose;
 
@@ -74,6 +79,13 @@ namespace gazebo
                 std::cout << "  "<<_cmd_pose_topic   << std::endl;
                 std::cout << "And some info: " << std::endl;
                 wave.info();
+                _platVel = VEL;
+                _dir = 1;
+
+            }
+            void invertDirection(){
+
+                _dir = -_dir;
 
             }
 
@@ -84,11 +96,17 @@ namespace gazebo
 
                 _pose = _model.get()->GetWorldPose();
                 _pose.rot = math::Quaternion(1,0,0,0);
-                _pose.pos.z = wave.generateWaveHeightAtPoint(_start_pose.pos.x,_start_pose.pos.y,_actual_sim_time,0) + 3;
+                //_pose.pos.z = wave.generateWaveHeightAtPoint(_start_pose.pos.x,_start_pose.pos.y,_actual_sim_time,0) + 3;
 
+                double xTemp = _pose.pos.x;
+                if(fabs(xTemp) > ((MAX_DIST - 0.01) + _start_pose.pos.x)) invertDirection();
+
+                double step =  _dir * (_dt * _platVel);
+                double newX = xTemp + step;
+
+                _pose.pos.x = newX;
                 _model.get()->SetAngularVel(math::Vector3(0,0,0));
-
-
+                _pose.pos.z = 1;
                 _model.get()->SetWorldPose(_pose);
 
                 //Prepare LCM material
