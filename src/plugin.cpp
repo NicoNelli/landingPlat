@@ -8,7 +8,7 @@
 #include "WaveGen.h"
 
 #define VEL 1
-#define MAX_DIST 5
+#define MAX_DIST 10
 
 namespace gazebo
 {
@@ -96,17 +96,15 @@ namespace gazebo
 
                 _pose = _model.get()->GetWorldPose();
                 _pose.rot = math::Quaternion(1,0,0,0);
-                //_pose.pos.z = wave.generateWaveHeightAtPoint(_start_pose.pos.x,_start_pose.pos.y,_actual_sim_time,0) + 3;
+                _pose.pos.z = wave.generateWaveHeightAtPoint(_pose.pos.x,_pose.pos.y,_actual_sim_time,0) + 2;
 
                 double xTemp = _pose.pos.x;
-                if(fabs(xTemp) > ((MAX_DIST - 0.01) + _start_pose.pos.x)) invertDirection();
-
-                double step =  _dir * (_dt * _platVel);
-                double newX = xTemp + step;
+                if(fabs(- xTemp + _start_pose.pos.x) > ((MAX_DIST - 0.01))) invertDirection();
+                double newX = xTemp + _dir * (_dt * _platVel);
 
                 _pose.pos.x = newX;
+
                 _model.get()->SetAngularVel(math::Vector3(0,0,0));
-                _pose.pos.z = 1;
                 _model.get()->SetWorldPose(_pose);
 
                 //Prepare LCM material
@@ -131,6 +129,7 @@ namespace gazebo
                 plat_pose.orientation[2] = _pose.rot.y;
                 plat_pose.orientation[3] = _pose.rot.z;
 
+
                 _handler.publish(_local_pose_topic,&plat_pose);
 
                 _prev_pose = _pose;
@@ -139,5 +138,5 @@ namespace gazebo
     };
 
     // Register this plugin with the simulator
-    GZ_REGISTER_MODEL_PLUGIN(PlatformManager)
+    GZ_REGISTER_MODEL_PLUGIN(PlatformManager);
 }

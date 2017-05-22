@@ -1,14 +1,7 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 PROJECT(landingPlat CXX)
 
-find_package(gazebo REQUIRED)
-
-include_directories(${GAZEBO_INCLUDE_DIRS})
 include_directories(include)
-
-link_directories(${GAZEBO_LIBRARY_DIRS})
-
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 set(M2M_INCLUDE "$ENV{M2M_INCLUDE}")
 if(M2M_INCLUDE)
